@@ -1,0 +1,113 @@
+{% extends 'bases/base.html' %} 
+{% load static %} 
+
+{% block 'head' %} 
+<div>
+
+
+  <link href="{% static 'home/css/home.css' %}" rel="stylesheet" /> 
+
+  <header>
+    <div class="block">
+      <img src="{% static 'home/img/logo_nutree.png' %}" alt="logo_nutree">
+      <div class="title">
+        <h1>Calcular Produtividade</h1>
+        <h3>Developed by Kaue Siqueira</h3>
+        
+      </div>
+    </div>
+  
+    <div class="user">
+      <img src="{% static 'home/img/user.svg' %}" alt="user">
+      <p>Usuário Logado {{ request.user.username }}</p>
+    </div>
+  </div>
+    <nav>
+      <li>home</li>
+    </nav>
+    
+    <div class="line"></div>
+  </header>
+
+{% endblock %} 
+
+{% block 'body' %}
+
+  <div class="container">
+    <div class="buttons">
+    
+    <form class="form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+     <div class="file-container">
+       <label for="excel_file">Escolher arquivo</label>
+       <input class="file" type="file" id="excel_file" name="excel_file" accept=".xls, .xlsx" required />
+     </div>
+      
+      <button class="calculate" type="submit">Calcular</button>
+
+      {% if results %}
+     <div class="download-container">
+       <a class="download" href="{% url 'download_excel' %}" download>Download</a>
+     </div>
+     {% endif %}
+    </form>
+
+    <div class="logout-container">
+      <a class="logout" href="{% url 'logout' %}">Logout</a>
+    </div>
+  </div>
+
+    <div class="results">
+    {% if results %}
+    <h2>Resultados:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Volume ha</th>
+                <th>PPAHa</th>
+                <th>PCHa</th>
+                <th>PLHa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.volume_ha }}</td>
+                <td>{{ result.PPAHa }}</td>
+                <td>{{ result.PCHa }}</td>
+                <td>{{ result.PLHa }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+    
+    {% endif %}
+  </div>
+  <p>O arquivo <a href="{% url 'download_excel' %}" class="download-link">resultado.xlsx</a> foi criado e está disponível para download.</p>
+  </div>
+
+  <script>
+    let inactivityTimeout;
+
+    function startInactivityTimer() {
+        inactivityTimeout = setTimeout(() => {
+            window.location.href = "{% url 'logout' %}";
+        }, 1 * 60 * 1000); // 2 minutos em milissegundos
+    }
+
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimeout);
+        startInactivityTimer();
+    }
+
+    // Iniciar o temporizador quando a página é carregada
+    startInactivityTimer();
+
+    // Redefinir o temporizador em resposta a eventos de atividade do usuário
+    window.addEventListener("mousemove", resetInactivityTimer);
+    window.addEventListener("keydown", resetInactivityTimer);
+    // Adicione mais eventos conforme necessário (por exemplo, "click", "scroll", etc.)
+</script>
+{% endblock %}

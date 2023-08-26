@@ -1,0 +1,18 @@
+{% extends 'bases/base.html' %}
+{% load static %} 
+
+{% block 'head' %}
+  <link href="{% static 'login/css/login.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block 'body' %}
+  <div class="container">
+    <h1>Desafio Nutree</h1>
+    <form method="post" action="{% url 'home' %}">
+      {% csrf_token %}
+      <label>Faça <span>Login</span> para continuar </label>
+      <input type="text" name="username" placeholder="  Coloque seu nome aqui" required />
+      <button type="submit">Logar</button>
+    </form>
+  </div>
+{% endblock %}
